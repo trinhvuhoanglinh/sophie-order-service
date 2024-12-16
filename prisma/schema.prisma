@@ -1,0 +1,134 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String         @id @default(uuid()) @map("id")
+  username      String         @unique @map("username")
+  email         String         @unique @map("email")
+  password      String         @map("password")
+  roles         Role[]         @relation("UserRoles")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  createdBy     String?        @map("created_by")
+  updatedBy     String?        @map("updated_by")
+  authCodes     AuthCode[]     @relation("UserAuthCodes")
+  refreshTokens RefreshToken[] @relation("UserRefreshTokens")
+}
+
+model Role {
+  id          String       @id @default(uuid()) @map("id")
+  name        String       @unique @map("name")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  createdBy   String?      @map("created_by")
+  updatedBy   String?      @map("updated_by")
+  permissions Permission[] @relation("RolePermissions")
+  users       User[]       @relation("UserRoles")
+}
+
+model Permission {
+  id        String   @id @default(uuid()) @map("id")
+  name      String   @unique @map("name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  roles     Role[]   @relation("RolePermissions")
+}
+
+model AuthCode {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String   @map("user_id")
+  code      String   @unique @map("code")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  user      User     @relation("UserAuthCodes", fields: [userId], references: [id])
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid()) @map("id")
+  token      String   @map("token")
+  userId     String   @map("user_id")
+  deviceInfo String?  @map("device_info")
+  ipAddress  String?  @map("ip_address")
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  createdBy  String?  @map("created_by")
+  updatedBy  String?  @map("updated_by")
+  user       User     @relation("UserRefreshTokens", fields: [userId], references: [id])
+}
+
+model SalesOrder2023 {
+  id               Int                  @id @default(autoincrement())
+  orderId          String               @unique
+  email            String
+  grandTotal       Float
+  grandTotalIncTax Float
+  status           String
+  createdAt        DateTime             @default(now())
+  items            SalesOrderItem2023[]
+}
+
+model SalesOrderItem2023 {
+  id          Int            @id @default(autoincrement())
+  itemId      String         @unique
+  orderId     Int
+  sku         String
+  price       Float
+  priceIncTax Float
+  createdAt   DateTime       @default(now())
+  salesOrder  SalesOrder2023 @relation(fields: [orderId], references: [id])
+}
+
+model SalesOrder2024 {
+  id               Int                  @id @default(autoincrement())
+  orderId          String               @unique
+  email            String
+  grandTotal       Float
+  grandTotalIncTax Float
+  status           String
+  createdAt        DateTime             @default(now())
+  items            SalesOrderItem2024[]
+}
+
+model SalesOrderItem2024 {
+  id          Int            @id @default(autoincrement())
+  itemId      String         @unique
+  orderId     Int
+  sku         String
+  price       Float
+  priceIncTax Float
+  createdAt   DateTime       @default(now())
+  salesOrder  SalesOrder2024 @relation(fields: [orderId], references: [id])
+}
+
+model SalesOrder2022 {
+  id               Int                  @id @default(autoincrement())
+  orderId          String               @unique
+  email            String
+  grandTotal       Float
+  grandTotalIncTax Float
+  status           String
+  createdAt        DateTime             @default(now())
+  items            SalesOrderItem2022[]
+}
+
+model SalesOrderItem2022 {
+  id          Int            @id @default(autoincrement())
+  itemId      String         @unique
+  orderId     Int
+  sku         String
+  price       Float
+  priceIncTax Float
+  createdAt   DateTime       @default(now())
+  salesOrder  SalesOrder2022 @relation(fields: [orderId], references: [id])
+}

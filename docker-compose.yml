@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env  # Tải tất cả biến môi trường từ file .env
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/src/app
+
+  db:
+    image: postgres:17
+    restart: always
+    env_file:
+      - .env  # Tải biến môi trường cho DB từ file .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}  # Sử dụng biến môi trường từ file .env
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+        - postgres_data:/var/lib/postgresql/data  # Lưu trữ dữ liệu
+volumes:
+  postgres_data:
